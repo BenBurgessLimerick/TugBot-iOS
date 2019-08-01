@@ -1,0 +1,6 @@
+module BRHJoyStickView {
+  umbrella header "BRHJoyStickView-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,6 @@
+module RBSManager {
+  umbrella header "RBSManager-umbrella.h"
+
+  export *
+  module * { export * }
+}

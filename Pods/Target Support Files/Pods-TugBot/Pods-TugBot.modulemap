@@ -1,0 +1,6 @@
+module Pods_TugBot {
+  umbrella header "Pods-TugBot-umbrella.h"
+
+  export *
+  module * { export * }
+}
