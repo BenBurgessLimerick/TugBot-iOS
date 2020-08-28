@@ -8,6 +8,7 @@
 import UIKit
 import BRHJoyStickView
 import RBSManager
+import WebKit
 
 class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate {
     @IBOutlet weak var linearSpeed: UISlider!
@@ -39,6 +40,8 @@ class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate 
     var rosManager: RBSManager?
     var velocityPublisher: RBSPublisher?
     
+    @IBOutlet var webView: WKWebView!
+    
     @IBAction func sliderChanged(_ sender: UISlider, forEvent event: UIEvent) {
         
         if (sender == linearSpeed) {
@@ -58,11 +61,11 @@ class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate 
         rosManager = RBSManager.sharedManager()
         rosManager?.delegate = self
         
-        let videoSubscriber = rosManager?.addSubscriber(topic: "/raspicam_node/image/compressed", messageClass: CompressedImageMessage.self, response: { (message) -> (Void) in
-            // update the view with message data
-            self.updateVideoFrame(message as! CompressedImageMessage)
-        })
-        videoSubscriber?.messageType = "sensor_msgs/CompressedImage"
+//        let videoSubscriber = rosManager?.addSubscriber(topic: "/raspicam_node/image/compressed", messageClass: CompressedImageMessage.self, response: { (message) -> (Void) in
+//            // update the view with message data
+//            self.updateVideoFrame(message as! CompressedImageMessage)
+//        })
+//        videoSubscriber?.messageType = "sensor_msgs/CompressedImage"
         
         velocityPublisher = rosManager?.addPublisher(topic: "/tugbot_velocity_controller/cmd_vel", messageType: "geometry_msgs/Twist", messageClass: TwistMessage.self)
         
@@ -89,19 +92,18 @@ class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate 
         
         sendTimer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(sendDesiredVelocity), userInfo: nil, repeats: true)
         
-        video.image = UIImage(named: "TestImage")
     }
     
     
-    func updateVideoFrame(_ message: CompressedImageMessage) {
-        print ("Received Image")
-        let imageData = message.data
-        if (imageData != nil) {
-            video.image = UIImage(data: Data(imageData!))
-        } else {
-            print("Was nil")
-        }
-    }
+//    func updateVideoFrame(_ message: CompressedImageMessage) {
+//        print ("Received Image")
+//        let imageData = message.data
+//        if (imageData != nil) {
+//            video.image = UIImage(data: Data(imageData!))
+//        } else {
+//            print("Was nil")
+//        }
+//    }
     
     @objc func sendDesiredVelocity() {
         
@@ -145,7 +147,7 @@ class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate 
     private func repositionJoysticks(size: CGSize) {
         let span = joystickOffset + joystickSpan / 2.0
         let offset = CGSize(width: span, height: span)
-        joystick1.center = CGPoint(x: offset.width, y: size.height - (1.3 * offset.height))
+        joystick1.center = CGPoint(x: offset.width, y: size.height - (1.0 * offset.height))
     }
     
     func manager(_ manager: RBSManager, threwError error: Error) {
@@ -184,6 +186,9 @@ class ViewController: UIViewController, UITextFieldDelegate, RBSManagerDelegate 
         } else {
             if socketHost != nil {
                 // the manager will produce a delegate error if the socket host is invalid
+                let url = URL(string: "http://" + socketHost!.split(separator: ":")[0] + ":8000")!
+                webView.load(URLRequest(url: url))
+                
                 rosManager?.connect(address: socketHost!)
                 saveSettings()
             } else {

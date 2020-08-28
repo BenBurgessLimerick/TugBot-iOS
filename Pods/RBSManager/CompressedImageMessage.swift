@@ -30,12 +30,12 @@ public class CompressedImageMessage: RBSMessage {
         format <- map["format"]
 //        let dataString = map["data"].value()
         print ("Here")
-        do {
-            try print( (map.value("data") is String) as Any)
-        }catch {
-            print("err")
-            
-        }
+//        do {
+//            try print( (map.value("data") is String) as Any)
+//        }catch {
+//            print("err")
+//            
+//        }
         print("Now here")
         
 //        data = Data(base64Encoded: (map["data"].value()!))!
